@@ -43,9 +43,11 @@ array[int] of int: NW = 1..(nw);
 
 
 % (1) and (2)
-constraint forall(d in W, s in A)(sum(i in 0..(n-1))(T[d + w*i mod nw] == s) == R[s, d+o mod w]);
+constraint forall(d in W, s in A)
+              (sum(i in 0..(n-1))(T[d + w*i mod nw] == s) == R[s, d+o mod w]);
 constraint implied_constraint(
-  forall(d in W)(sum(i in 0..(n-1))(T[d + w*i mod nw] == 0) == n - sum(i in 1..m)(R[i, d+o mod w]))
+  forall(d in W)
+      (sum(i in 0..(n-1))(T[d + w*i mod nw] == 0) == n - sum(i in 1..m)(R[i, d+o mod w]))
 );
 
 % (3) and (4)
