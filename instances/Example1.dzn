@@ -4,13 +4,13 @@ demand = [| 2, 2, 2, 2, 2, 2, 2,
           | 2, 2, 2, 3, 3, 3, 2,
           | 2, 2, 2, 2, 2, 2, 2 |];
 
-% next 4 lines are l_w and u_w
+% next 4 lines are l_s and u_s
 minShift = [2, 2, 2];
 maxShift = [7, 6, 4];
 minOff = 2;
 maxOff = 4;
 
-% l_s and u_s
+% l_w and u_w
 minOn = 4;
 maxOn = 7;
 
