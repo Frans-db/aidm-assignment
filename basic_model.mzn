@@ -20,6 +20,11 @@ array[int, int] of set of int: forbidden3;
 var 0..(w-1): o;
 array[1..groups*w] of var int: T;
 
+
+% Creating l_s and u_s
+array[int] of int: ls = [minOff] ++ minShift;
+array[int] of int: us = [maxOff] ++ maxShift;
+
 % (1) and (2)
 constraint forall(d in 1..w, s in 1..numShifts)(sum(i in 0..(groups - 1))(T[d+w*i mod groups*w] == s) == demand[s, d + o mod w]);
 constraint implied_constraint(forall(d in 1..w)(sum(i in 0..(groups - 1))(T[d+w*i mod groups*w] == 0) == groups - sum(i in 1..numShifts)(demand[i, d+o mod w])));
@@ -28,6 +33,9 @@ constraint implied_constraint(forall(d in 1..w)(sum(i in 0..(groups - 1))(T[d+w*
 constraint symmetry_breaking_constraint(T[1] != 0);
 constraint symmetry_breaking_constraint(T[groups*w] != 0);
 
+% (5)
+constraint forall(s in 0..numShifts, i in 1..(groups*numShifts), j in 1..(ls[s] - 1))(T[i-1 mod groups*w])
+
 solve satisfy;
 
-output ["T = \(T)\n"];
+output ["T = \(us)\n"];
