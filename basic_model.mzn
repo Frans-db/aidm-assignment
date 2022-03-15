@@ -59,6 +59,9 @@ constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1] != s) -> forall(j i
 % constraint forall(i in NW, s in A_plus, j in 1..(ls[s+1] - 1))((T[i mod nw] == s /\ T[i-1 mod nw] != s) -> T[i+j mod nw] == s);
 % constraint forall(i in 1..(groups*w), s in 0..numShifts, j in 1..(ls[s+1]-1))((T[i mod nw] == s) /\ T[i-1 md w]);
 
+% (6) 
+constraint forall(s in 0..numShifts, i in 1..(n*w), j in ls[s+1]..us[s+1])(((i+us[s+1]) > (groups*w)) \/ ((T[i+j] != s) /\ (T[i mod nw] == s) /\ (T[i-1 mod w] != s)));
+
 solve satisfy;
 
 output ["T = \(T)\n"];
