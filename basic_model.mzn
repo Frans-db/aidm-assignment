@@ -55,6 +55,9 @@ constraint symmetry_breaking_constraint(T[groups*w] != 0);
 % (5)
 % constraint forall(i in 1..(groups*w), s in 0..numShifts, j in 1..(ls[s+1]-1))((T[i mod nw] == s) /\ T[i-1 md w]);
 
+% (6) 
+constraint forall(s in 0..numShifts, i in 1..(n*w), j in ls[s+1]..us[s+1])(((i+us[s+1]) > (groups*w)) \/ ((T[i+j] != s) /\ (T[i mod nw] == s) /\ (T[i-1 mod w] != s)));
+
 solve satisfy;
 
 output ["T = \(sum(i in 0..(n-1))(T[2 + w*i mod nw] == 0))\n"];
