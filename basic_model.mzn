@@ -28,9 +28,6 @@ constraint implied_constraint(forall(d in 1..w)(sum(i in 0..(groups - 1))(T[d+w*
 constraint symmetry_breaking_constraint(T[1] != 0);
 constraint symmetry_breaking_constraint(T[groups*w] != 0);
 
-% (5)
-constraint forall(j in 1..)();
-
 solve satisfy;
 
 output ["T = \(T)\n"];

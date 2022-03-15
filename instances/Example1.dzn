@@ -3,11 +3,16 @@ numShifts = 3;
 demand = [| 2, 2, 2, 2, 2, 2, 2,
           | 2, 2, 2, 3, 3, 3, 2,
           | 2, 2, 2, 2, 2, 2, 2 |];
+
+% next 4 lines are l_w and u_w
 minShift = [2, 2, 2];
 maxShift = [7, 6, 4];
 minOff = 2;
 maxOff = 4;
+
+% l_s and u_s
 minOn = 4;
 maxOn = 7;
+
 forbidden = [{}, {1}, {1,2}];
 forbidden3 = [|  |];
