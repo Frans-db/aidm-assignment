@@ -69,6 +69,9 @@ constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1 mod nw] != s) -> (i+
 % (7)
 constraint forall(i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> forall(j in 1..(lw-1))(T[i+j mod nw] != 0));
 
+% (8)
+constraint forall(s in A_plus, i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> (i+uw > nw \/ exists(j in lw..uw)(T[i+j mod nw] == 0)));
+
 % (9) bad!
 % constraint forall(s in A, i in NW)(T[i] != s \/ forall(fs in F)(has_element(s, fs) /\ has_element(T[i+1], fs)));
 
