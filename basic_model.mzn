@@ -56,12 +56,15 @@ constraint symmetry_breaking_constraint(T[1] != 0);
 constraint symmetry_breaking_constraint(T[groups*w] != 0);
 
 % (5)
-% constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1] != s) -> forall(j in 1..(ls[s+1]-1))(T[i+j] == s));
+constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1 mod nw] != s) -> forall(j in 1..(ls[s+1]-1))(T[i+j] == s));
 % constraint forall(i in NW, s in A_plus, j in 1..(ls[s+1] - 1))((T[i mod nw] == s /\ T[i-1 mod nw] != s) -> T[i+j mod nw] == s);
 % constraint forall(i in 1..(groups*w), s in 0..numShifts, j in 1..(ls[s+1]-1))((T[i mod nw] == s) /\ T[i-1 md w]);
 
 % (6) 
 % constraint forall(s in 0..numShifts, i in 1..(n*w), j in ls[s+1]..us[s+1])(((i+us[s+1]) > (groups*w)) \/ ((T[i+j] != s) /\ (T[i mod nw] == s) /\ (T[i-1 mod w] != s)));
+
+% (7)
+constraint forall(i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> forall(j in 1..(lw-1))(T[i+j mod nw] != 0));
 
 % (9) bad!
 % constraint forall(s in A, i in NW)(T[i] != s \/ forall(fs in F)(has_element(s, fs) /\ has_element(T[i+1], fs)));
