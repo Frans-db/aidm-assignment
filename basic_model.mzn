@@ -71,7 +71,7 @@ constraint forall(i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> forall(j in 1..(
 constraint forall(s in A_plus, i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> (i+uw > nw \/ exists(j in lw..uw)(T[i+j mod nw] == 0)));
 
 % (9)
-constraint forall(s in A, i in NW, fs in F)(length(fs) == 2 -> (T[i] == fs[1] -> T[i+1 mod nw] != fs[2]));
+constraint forall(s in A, i in NW, fs in F)((T[i] == s -> not (T[i+1] in F[s])));
 
 % (11)
 % constraint symmetry_breaking_constraint(
