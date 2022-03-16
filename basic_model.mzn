@@ -63,6 +63,9 @@ constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1 mod nw] != s) -> for
 % (6) 
 % constraint forall(s in 0..numShifts, i in 1..(n*w), j in ls[s+1]..us[s+1])(((i+us[s+1]) > (groups*w)) \/ ((T[i+j] != s) /\ (T[i mod nw] == s) /\ (T[i-1 mod w] != s)));
 
+% (6) (frans)
+constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1 mod nw] != s) -> (i+us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j mod nw] == s)));
+
 % (7)
 constraint forall(i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> forall(j in 1..(lw-1))(T[i+j mod nw] != 0));
 
