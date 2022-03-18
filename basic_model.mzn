@@ -80,10 +80,16 @@ constraint implied_constraint( forall(i in NW)
 % (9)
 constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 
-% constraint forall(X in forbidden3, i in NW)
-%               (exists(j in 1..3)(X[j] != T[i + j - 1]));
+% (10)
+constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
+              (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod nw]));
 
+% (11)
+% (12)
+constraint symmetry_breaking_constraint(
+  forall(s in A, d in W)(R[s,d] == R[s,d+1]) -> o == 0
+);
 
 solve satisfy;
 
-output ["T = \(forbidden3)\n"];
+output ["T = \(T)\n"];
