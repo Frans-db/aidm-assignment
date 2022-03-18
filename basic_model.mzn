@@ -40,38 +40,49 @@ int: uw = maxOn;
 
 array[int] of int: W = 1..w;
 array[int] of int: N = 1..n;
-array[int] of int: NW = 1..(nw);
+array[int] of int: NW = 1..nw;
 
 
 % (1) and (2)
+% constraint forall(d in W, s in A)
+%               (sum(i in 0..(n-1))(T[(d + w*i) mod nw] == s) == R[s, d+o mod w]);
 constraint forall(d in W, s in A)
-              (sum(i in 0..(n-1))(T[d + w*i mod nw] == s) == R[s, d+o mod w]);
-constraint implied_constraint(
-  forall(d in W)
-      (sum(i in 0..(n-1))(T[d + w*i mod nw] == 0) == n - sum(i in 1..m)(R[i, d+o mod w]))
-);
+              (sum(i in 0..(n-1))(T[d + w*i] == s) == R[s, d+o]);
+constraint forall(d in W)
+              (sum(i in 0..(n-1))(T[d + w*i] == 0) == n - sum(i in 1..m)(R[i, d+o]));        
+% constraint implied_constraint(
+%   forall(d in W)
+%       (sum(i in 0..(n-1))(T[d + w*i mod nw] == 0) == n - sum(i in 1..m)(R[i, d+o mod w]))
+% );
 
 % (3) and (4)
 constraint symmetry_breaking_constraint(T[1] != 0);
-constraint symmetry_breaking_constraint(T[groups*w] != 0);
+constraint symmetry_breaking_constraint(T[nw] != 0);
 
 % (5)
-constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1 mod nw] != s) -> forall(j in 1..(ls[s+1]-1))(T[i+j] == s));
+constraint forall(s in A_plus, i in NW)
+              ((T[i] == s /\ T[i-1] != s) -> 
+                  forall(j in 1..(ls[s+1]-1))
+                      (T[(i+j) mod nw] == s));
+% constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1 mod nw] != s) -> forall(j in 1..(ls[s+1]-1))(T[i+j] == s));
 
 % (6) 
+constraint forall(s in A_plus, i in NW)
+              ((T[i] == s /\ T[i-1] != s) -> 
+                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[(i+j) mod nw] != s));
 % constraint forall(s in 0..numShifts, i in 1..(n*w), j in ls[s+1]..us[s+1])(((i+us[s+1]) > (groups*w)) \/ ((T[i+j] != s) /\ (T[i mod nw] == s) /\ (T[i-1 mod w] != s)));
 
 % (6) (frans)
-constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1 mod nw] != s) -> (i+us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j mod nw] == s)));
+% constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1 mod nw] != s) -> (i+us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j mod nw] == s)));
 
 % (7)
-constraint forall(i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> forall(j in 1..(lw-1))(T[i+j mod nw] != 0));
+% constraint forall(i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> forall(j in 1..(lw-1))(T[i+j mod nw] != 0));
 
 % (8)
-constraint forall(s in A_plus, i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> (i+uw > nw \/ exists(j in lw..uw)(T[i+j mod nw] == 0)));
+% constraint forall(s in A_plus, i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> (i+uw > nw \/ exists(j in lw..uw)(T[i+j mod nw] == 0)));
 
 % (9)
-constraint forall(s in A, i in NW, fs in F)((T[i] == s -> not (T[i+1] in F[s])));
+% constraint forall(s in A, i in NW, fs in F)((T[i] == s -> not (T[i+1] in F[s])));
 
 % (11)
 % constraint symmetry_breaking_constraint(
@@ -79,9 +90,9 @@ constraint forall(s in A, i in NW, fs in F)((T[i] == s -> not (T[i+1] in F[s])))
 % );
 
 % (12)
-constraint symmetry_breaking_constraint(
-  forall(s in A, d in W)(R[s,d] == R[s,d+1 mod w] -> o == 0)
-);
+% constraint symmetry_breaking_constraint(
+%   forall(s in A, d in W)(R[s,d] == R[s,d+1 mod w] -> o == 0)
+% );
 
 solve satisfy;
 
