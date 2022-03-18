@@ -24,7 +24,7 @@ array[1..(m+1)] of int: A_plus = A ++ [0];
 
 array[int] of set of int: forbidden;
 array[int] of set of int: F = forbidden;
-array[int, int] of set of int: forbidden3;
+array[int, 1..3] of int: forbidden3;
 
 int: nw = groups * w;
 
@@ -48,8 +48,8 @@ array[int] of int: NW = 1..nw;
 %               (sum(i in 0..(n-1))(T[(d + w*i) mod nw] == s) == R[s, d+o mod w]);
 constraint forall(d in W, s in A)
               (sum(i in 0..(n-1))(T[d + w*i] == s) == R[s, d+o]);
-constraint forall(d in W)
-              (sum(i in 0..(n-1))(T[d + w*i] == 0) == n - sum(i in 1..m)(R[i, d+o]));        
+constraint implied_constraint( forall(d in W)
+              (sum(i in 0..(n-1))(T[d + w*i] == 0) == n - sum(i in 1..m)(R[i, d+o])) );        
 % constraint implied_constraint(
 %   forall(d in W)
 %       (sum(i in 0..(n-1))(T[d + w*i mod nw] == 0) == n - sum(i in 1..m)(R[i, d+o mod w]))
@@ -75,15 +75,15 @@ constraint forall(s in A_plus, i in NW)
 % constraint forall(s in 0..numShifts, i in 1..(n*w), j in ls[s+1]..us[s+1])(((i+us[s+1]) > (groups*w)) \/ ((T[i+j] != s) /\ (T[i mod nw] == s) /\ (T[i-1 mod w] != s)));
 
 % (7)
-constraint forall(i in NW)
+constraint implied_constraint( forall(i in NW)
               ((T[i] != 0 /\ T[i-1] == 0) -> 
                   forall(j in 1..(lw-1))
-                      (T[(i+j) mod nw] != 0));
+                      (T[(i+j) mod nw] != 0)) );
 
 % (8)
-constraint forall(i in NW)
+constraint implied_constraint( forall(i in NW)
               ((T[i] != 0 /\ T[i-1] == 0) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[(i+j) mod nw] == 0));
+                  i + uw > nw \/ exists(j in lw..uw)(T[(i+j) mod nw] == 0)) );
 
 % (6) (frans)
 % constraint forall(s in A_plus, i in NW)((T[i] == s /\ T[i-1 mod nw] != s) -> (i+us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j mod nw] == s)));
@@ -95,19 +95,22 @@ constraint forall(i in NW)
 % constraint forall(s in A_plus, i in NW)((T[i] != 0 /\ T[i-1 mod nw] == 0) -> (i+uw > nw \/ exists(j in lw..uw)(T[i+j mod nw] == 0)));
 
 % (9)
-constraint forall (s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
+constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 % constraint forall(s in A, i in NW, fs in F)((T[i] == s -> not (T[i+1] in F[s])));
+
+% constraint forall(X in forbidden3, i in NW)
+%               (exists(j in 1..3)(X[j] != T[i + j - 1]));
 
 % (11)
 % constraint symmetry_breaking_constraint(
-%   o = min([d | d in W where sum(i in 1..m)(R[i,d]) > sum(i in 1..m)(R[i,d-1 mod w])]) - 1
+%   o == min([d | d in W where sum(i in 1..m)(R[i,d]) > sum(i in 1..m)(R[i,d-1])]) - 1
 % );
 
 % (12)
 % constraint symmetry_breaking_constraint(
-%   forall(s in A, d in W)(R[s,d] == R[s,d+1 mod w] -> o == 0)
+%   forall(s in A, d in W)(R[s,d] == R[s, d+1]) -> o == 0
 % );
 
 solve satisfy;
 
-output ["T = \(T)\n"];
+output ["T = \(forbidden3)\n"];
