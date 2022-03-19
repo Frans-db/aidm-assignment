@@ -59,30 +59,30 @@ constraint symmetry_breaking_constraint(T[nw] == 0);
 constraint forall(s in A_plus, i in NW)
               ((T[i] == s /\ T[i-1] != s) -> 
                   forall(j in 1..(ls[s+1]-1))
-                      (T[(i+j) mod nw] == s));
+                      (T[(i+j) mod (nw+1)] == s));
 
 % (6) 
 constraint forall(s in A_plus, i in NW)
               ((T[i] == s /\ T[i-1] != s) -> 
-                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[(i+j) mod nw] != s));
+                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[(i+j) mod (nw+1)] != s));
 
 % (7)
 constraint implied_constraint( forall(i in NW)
               ((T[i] != 0 /\ T[i-1] == 0) -> 
                   forall(j in 1..(lw-1))
-                      (T[(i+j) mod nw] != 0)) );
+                      (T[(i+j) mod (nw+1)] != 0)) );
 
 % (8)
 constraint implied_constraint( forall(i in NW)
               ((T[i] != 0 /\ T[i-1] == 0) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[(i+j) mod nw] == 0)) );
+                  i + uw > nw \/ exists(j in lw..uw)(T[(i+j) mod (nw+1)] == 0)) );
 
 % % (9)
 constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 
 % % (10)
 constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
-              (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod nw]));
+              (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod (nw+1)]));
 
 % (11)
 % (12)
