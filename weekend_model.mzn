@@ -94,4 +94,4 @@ constraint symmetry_breaking_constraint(
 var int: freeWeekends = sum(i in 1..n)(T[(w*i - o - 1)] == 0 /\ T[(w*i - 0)] == 0);
 solve maximize freeWeekends;
 
-output ["Free Weekends = \(freeWeekends)\n"];
+output ["Free Weekends = \(freeWeekends)\n", "Schedule = \(T)\n"];
