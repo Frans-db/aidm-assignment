@@ -37,21 +37,28 @@ array[int] of int: N = 1..n;
 array[int] of int: NW = 1..nw;
 
 
-var 0..(w-1): o;
-array[1..nw] of var 0..numShifts: T;
+array[s in A_plus, 1..w] of var 1..n: T;
 
-% viewpoint 1:
-% for each day, which task is assigned to it
+% viewpoint 2:
+% for each task-day, which employee is assigned to it
+
+% constraints from paper:
+% 1. demand on each day is met
+% 2. blocks meet minimum length requirement
+% 3. blocks meet maximum length requirement
+% 4. no forbidden sequences
+
+
 
 % (1) and (2)
-constraint forall(d in W, s in A)
-              (sum(i in 0..(n-1))(T[d + w*i] == s) == R[s, d+o]);
-constraint implied_constraint( forall(d in W)
-              (sum(i in 0..(n-1))(T[d + w*i] == 0) == n - sum(i in 1..m)(R[i, d+o])) );        
+% constraint forall(d in W, s in A)
+%               (sum(i in 0..(n-1))(T[d + w*i] == s) == R[s, d+o]);
+% constraint implied_constraint( forall(d in W)
+%               (sum(i in 0..(n-1))(T[d + w*i] == 0) == n - sum(i in 1..m)(R[i, d+o])) );        
 
 % (3) and (4)
-constraint symmetry_breaking_constraint(T[1] != 0);
-constraint symmetry_breaking_constraint(T[nw] == 0);
+% constraint symmetry_breaking_constraint(T[1] != 0);
+% constraint symmetry_breaking_constraint(T[nw] == 0);
 
 % custom
 % constraint symmetry_breaking_constraint(
@@ -60,42 +67,41 @@ constraint symmetry_breaking_constraint(T[nw] == 0);
 
 
 % (5)
-constraint forall(s in A_plus, i in NW)
-              ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
-                  forall(j in 1..(ls[s+1]-1))
-                      (T[i+j] == s));
+% constraint forall(s in A_plus, i in NW)
+%               ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
+%                   forall(j in 1..(ls[s+1]-1))
+%                       (T[i+j] == s));
 
 % (6) 
-constraint forall(s in A_plus, i in NW)
-              ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
-                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j] != s));
+% constraint forall(s in A_plus, i in NW)
+%               ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
+%                   i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j] != s));
 
 % (7)
-constraint implied_constraint( forall(i in NW)
-              ((T[i] != 0 /\ (T[i-1] == 0 \/ i == 1)) -> 
-                  forall(j in 1..(lw-1))
-                      (T[i+j] != 0)) );
+% constraint implied_constraint( forall(i in NW)
+%               ((T[i] != 0 /\ (T[i-1] == 0 \/ i == 1)) -> 
+%                   forall(j in 1..(lw-1))
+%                       (T[i+j] != 0)) );
 
 % (8)
-constraint implied_constraint( forall(i in NW)
-              ((T[i] != 0 /\ (T[i-1] == 0 \/ i == 1)) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[i+j] == 0)) );
+% constraint implied_constraint( forall(i in NW)
+%               ((T[i] != 0 /\ (T[i-1] == 0 \/ i == 1)) -> 
+%                   i + uw > nw \/ exists(j in lw..uw)(T[i+j] == 0)) );
 
 % % (9)
-constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
+% constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 
 % % (10)
-constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
-              (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod (nw+1)]));
+% constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
+%               (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod (nw+1)]));
 
 
 % (12)
-constraint symmetry_breaking_constraint(
-  forall(s in A, d in W)(R[s,d] == R[s,d+1]) -> o == 0
+% constraint symmetry_breaking_constraint(
+%   forall(s in A, d in W)(R[s,d] == R[s,d+1]) -> o == 0
+% );
 
-);
+% var int: freeWeekends = sum(i in 1..n)(T[(w*i - o - 1)] == 0 /\ T[(w*i - 0)] == 0);
+solve satisfy;
 
-var int: freeWeekends = sum(i in 1..n)(T[(w*i - o - 1)] == 0 /\ T[(w*i - 0)] == 0);
-solve maximize freeWeekends;
-
-output ["Free Weekends = \(freeWeekends)\n", "Schedule = \(T)\n"];
+output ["Schedule = \(T)\n"];

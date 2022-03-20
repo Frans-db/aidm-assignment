@@ -41,7 +41,7 @@ var 0..(w-1): o;
 array[1..nw] of var 0..numShifts: T;
 
 % viewpoint 1:
-% for each day, which task is assigned to it
+% for each employee-day, which task is assigned to it
 
 % (1) and (2)
 constraint forall(d in W, s in A)
@@ -86,7 +86,7 @@ constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 
 % % (10)
 constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
-              (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod (nw+1)]));
+              (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1)]));
 
 
 % (12)
