@@ -4,12 +4,15 @@ int: w = 7;
 
 % Loaded data
 int: groups;
-int: numShifts;
-% Variable renaming
 int: n = groups;
+int: nw = n * w;
+
+int: numShifts;
 int: m = numShifts;
 
 array[1..m, 1..w] of int: demand;
+array[1..m, 1..w] of int: R = demand;
+
 array[1..m] of int: minShift;
 array[1..m] of int: maxShift;
 int: minOff;
@@ -17,8 +20,11 @@ int: maxOff;
 int: minOn;
 int: maxOn;
 
-% Variable renaming
-array[1..m, 1..w] of int: R = demand;
+array[int] of int: ls = [minOff] ++ minShift;
+array[int] of int: us = [maxOff] ++ maxShift;
+int: lw = minOn;
+int: uw = maxOn;
+
 array[1..m] of int: A = 1..m;
 array[1..(m+1)] of int: A_plus = A ++ [0];
 
@@ -26,22 +32,13 @@ array[int] of set of int: forbidden;
 array[int] of set of int: F = forbidden;
 array[int, 1..3] of int: forbidden3;
 
-int: nw = groups * w;
-
-% Variables o and T
-var 0..(w-1): o;
-array[1..nw] of var 0..numShifts: T;
-
-% Creating variables
-array[int] of int: ls = [minOff] ++ minShift;
-array[int] of int: us = [maxOff] ++ maxShift;
-int: lw = minOn;
-int: uw = maxOn;
-
 array[int] of int: W = 1..w;
 array[int] of int: N = 1..n;
 array[int] of int: NW = 1..nw;
 
+
+var 0..(w-1): o;
+array[1..nw] of var 0..numShifts: T;
 
 % (1) and (2)
 constraint forall(d in W, s in A)
@@ -53,7 +50,11 @@ constraint implied_constraint( forall(d in W)
 constraint symmetry_breaking_constraint(T[1] != 0);
 constraint symmetry_breaking_constraint(T[nw] == 0);
 
-% use (1 + (i mod len)) for indexing
+% custom
+% constraint symmetry_breaking_constraint(
+%   exists(s in A)(R[s, 1] > 0 /\ forall(j in 1..(ls[s]))(T[j] == s))
+% );
+
 
 % (5)
 constraint forall(s in A_plus, i in NW)
@@ -84,7 +85,7 @@ constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
               (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod (nw+1)]));
 
-% (11)
+
 % (12)
 constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[s,d] == R[s,d+1]) -> o == 0
