@@ -92,8 +92,10 @@ constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
 % (12)
 constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[s,d] == R[s,d+1]) -> o == 0
+
 );
 
-solve satisfy;
+var int: freeWeekends = sum(i in 1..n)(T[(w*i - o - 1)] == 0 /\ T[(w*i - 0)] == 0);
+solve maximize freeWeekends;
 
-output ["Schedule = \(T)\n"];
+output ["Free Weekends = \(freeWeekends)\n", "Schedule = \(T)\n"];

@@ -40,6 +40,9 @@ array[int] of int: NW = 1..nw;
 var 0..(w-1): o;
 array[1..nw] of var 0..numShifts: T;
 
+% viewpoint 1:
+% for each day, which task is assigned to it
+
 % (1) and (2)
 constraint forall(d in W, s in A)
               (sum(i in 0..(n-1))(T[d + w*i] == s) == R[s, d+o]);
@@ -89,7 +92,6 @@ constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
 % (12)
 constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[s,d] == R[s,d+1]) -> o == 0
-
 );
 
 var int: freeWeekends = sum(i in 1..n)(T[(w*i - o - 1)] == 0 /\ T[(w*i - 0)] == 0);
