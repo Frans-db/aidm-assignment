@@ -68,9 +68,9 @@ constraint forall(d in 1..w, e in 1..n)
                     
 % symmetry breaking constraints, also avoids cyclicity
 % employee 1 does not start with a free day
-constraint symmetry_breaking_constraint(not T[1, 1, 1]);
+constraint not T[1, 1, 1];
 % employee n ends with a free day
-constraint symmetry_breaking_constraint(T[1, n, w]);
+constraint T[1, n, w];
 
 % ensure blocks meet minimum length requirement
 constraint forall(s in 1..(m+1), i in 1..n*w)(
@@ -80,12 +80,14 @@ constraint forall(s in 1..(m+1), i in 1..n*w)(
 );  
 
 % ensure blocks meet maximum length requirement
-% TODO: First part of the or block?
 constraint forall(s in 1..(m+1), i in 1..n*w)(
   [T[s, e, d] | e in 1..n, d in 1..w][i] /\ (i = 1 \/ (not [T[s, e, d] | e in 1..n, d in 1..w][i-1])) ->
   (i + us[s] > n*w \/ exists(j in ls[s]..us[s]) (not [T[s, e, d] | e in 1..n, d in 1..w][i+j]))
 );  
 
+% different variatons for the forbidden constraints are hardcoded
+% this seems pretty inefficient, perhaps this could
+% be something to optimise in the second part of the assignment
 % forbidden within an employee
 constraint forall(s in 2..(m+1), e in 1..n, d in 1..(w-1))(
   (not T[s, e, d]) \/ forall(f in F[s-1])(not T[f+1, e, d+1])
@@ -102,7 +104,20 @@ constraint forall(s in 2..(m+1))(
   (not T[s, n, 7]) \/ forall(f in F[s-1])(not T[f+1, 1, 1])
 );
 
-% forbidden 3 ???
+% forbidden 3 within employee
+constraint forall(x in 1..round((length(forbidden3) / 3)), e in 1..n, d in 1..(w-2))
+            (exists(j in 0..2)
+              (not T[forbidden3[x,j+1]+1, e, d+j]));
+
+% forbidden 3 between employees
+constraint forall(x in 1..round((length(forbidden3) / 3)), e in 1..(n-1))
+            (((not T[forbidden3[x, 1]+1, e, 6]) \/ (not T[forbidden3[x, 2]+1, e, 7]) \/ (not T[forbidden3[x, 3]+1, e+1, 1])) /\
+            ((not T[forbidden3[x, 1]+1, e, 7]) \/ (not T[forbidden3[x, 2]+1, e+1, 1]) \/ (not T[forbidden3[x, 3]+1, e+1, 2])));
+
+% forbidden 3 between first and last employee
+constraint forall(x in 1..round((length(forbidden3) / 3)))
+           (((not T[forbidden3[x, 1]+1, n, 6]) \/ (not T[forbidden3[x, 2]+1, n, 7]) \/ (not T[forbidden3[x, 3]+1, 1, 1])) /\
+           ((not T[forbidden3[x, 1]+1, n, 7]) \/ (not T[forbidden3[x, 2]+1, 1, 1]) \/ (not T[forbidden3[x, 3]+1, 1, 2])));             
 
 var int: freeWeekends = sum(e in 1..n)(T[1, e, 6] /\ T[1, e, 7]);
 solve maximize freeWeekends;
