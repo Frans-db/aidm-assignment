@@ -72,18 +72,32 @@ constraint not T[1, 1, 1];
 % employee n ends with a free day
 constraint T[1, n, w];
 
-% ensure blocks meet minimum length requirement
+% ensure shift blocks meet minimum length requirement
 constraint forall(s in 1..(m+1), i in 1..n*w)(
   [T[s, e, d] | e in 1..n, d in 1..w][i] /\ (i = 1 \/ (not [T[s, e, d] | e in 1..n, d in 1..w][i-1])) ->
   forall(j in 1..(ls[s]-1))
       ([T[s, e, d] | e in 1..n, d in 1..w][i+j])
 );  
 
-% ensure blocks meet maximum length requirement
+% ensure shift blocks meet maximum length requirement
 constraint forall(s in 1..(m+1), i in 1..n*w)(
   [T[s, e, d] | e in 1..n, d in 1..w][i] /\ (i = 1 \/ (not [T[s, e, d] | e in 1..n, d in 1..w][i-1])) ->
   (i + us[s] > n*w \/ exists(j in ls[s]..us[s]) (not [T[s, e, d] | e in 1..n, d in 1..w][i+j]))
 );  
+
+% ensure blocks meet minimum length requirement
+constraint forall(i in 1..n*w)(
+  (not [T[1, e, d] | e in 1..n, d in 1..w][i]) /\ (i = 1 \/ ([T[1, e, d] | e in 1..n, d in 1..w][i-1])) ->
+  forall(j in 1..(lw-1))
+      (not [T[1, e, d] | e in 1..n, d in 1..w][i+j])
+);  
+
+% ensure blocks meet maximum length requirement
+constraint forall(i in 1..n*w)(
+  (not [T[1, e, d] | e in 1..n, d in 1..w][i]) /\ (i = 1 \/ ([T[1, e, d] | e in 1..n, d in 1..w][i-1])) ->
+  (i + uw > n*w \/ exists(j in lw..uw) ([T[1, e, d] | e in 1..n, d in 1..w][i+j]))
+);  
+
 
 % different variatons for the forbidden constraints are hardcoded
 % this seems pretty inefficient, perhaps this could
