@@ -65,42 +65,42 @@ constraint forall(d in 1..w, s in 1..m)(
 % on each day each employee only does 1 shift
 constraint forall(d in 1..w, e in 1..n) 
               (sum(s in 1..(m+1))(T[s, e, d]) = 1);
-              
-% % forbidden within an employee
-constraint forall(s in 2..(m+1), e in 1..n, d in 1..(w-1))(
-  (not T[s, e, d]) \/ forall(f in F[s-1])(not T[f, e, d+1])
-);
-  
                     
 % symmetry breaking constraints, also avoids cyclicity
 % employee 1 does not start with a free day
-% constraint symmetry_breaking_constraint(not T[1, 1, 1]);
+constraint symmetry_breaking_constraint(not T[1, 1, 1]);
 % employee n ends with a free day
-% constraint symmetry_breaking_constraint(T[1, n, w]);
+constraint symmetry_breaking_constraint(T[1, n, w]);
 
 % ensure blocks meet minimum length requirement
-% constraint forall(s in 1..(m+1), i in 1..n*w)(
-%   [T[s, e, d] | e in 1..n, d in 1..w][i] /\ (i = 1 \/ (not [T[s, e, d] | e in 1..n, d in 1..w][i-1])) ->
-%   forall(j in 1..(ls[s]-1))
-%       ([T[s, e, d] | e in 1..n, d in 1..w][i+j])
-% );  
+constraint forall(s in 1..(m+1), i in 1..n*w)(
+  [T[s, e, d] | e in 1..n, d in 1..w][i] /\ (i = 1 \/ (not [T[s, e, d] | e in 1..n, d in 1..w][i-1])) ->
+  forall(j in 1..(ls[s]-1))
+      ([T[s, e, d] | e in 1..n, d in 1..w][i+j])
+);  
 
 % ensure blocks meet maximum length requirement
 % TODO: First part of the or block?
-% constraint forall(s in 1..(m+1), i in 1..n*w)(
-%   [T[s, e, d] | e in 1..n, d in 1..w][i] /\ (i = 1 \/ (not [T[s, e, d] | e in 1..n, d in 1..w][i-1])) ->
-%   (i + us[s] > n*w \/ exists(j in ls[s]..us[s]) (not [T[s, e, d] | e in 1..n, d in 1..w][i+j]))
-% );  
+constraint forall(s in 1..(m+1), i in 1..n*w)(
+  [T[s, e, d] | e in 1..n, d in 1..w][i] /\ (i = 1 \/ (not [T[s, e, d] | e in 1..n, d in 1..w][i-1])) ->
+  (i + us[s] > n*w \/ exists(j in ls[s]..us[s]) (not [T[s, e, d] | e in 1..n, d in 1..w][i+j]))
+);  
 
-% % % % forbidden between employees
-% constraint forall(s in 2..(m+1), e in 1..(n-1))(
-%   (not T[s, e, 7]) \/ forall(f in F[s-1])(not T[f, e+1, 1])
-% );
+% forbidden within an employee
+constraint forall(s in 2..(m+1), e in 1..n, d in 1..(w-1))(
+  (not T[s, e, d]) \/ forall(f in F[s-1])(not T[f+1, e, d+1])
+);
 
-% % % % forbidden between first and last employee
-% constraint forall(s in 2..(m+1))(
-%   (not T[s, n, 7]) \/ forall(f in F[s-1])(not T[f, 1, 1])
-% );
+
+% forbidden between employees
+constraint forall(s in 2..(m+1), e in 1..(n-1))(
+  (not T[s, e, 7]) \/ forall(f in F[s-1])(not T[f, e+1, 1])
+);
+
+% forbidden between first and last employee
+constraint forall(s in 2..(m+1))(
+  (not T[s, n, 7]) \/ forall(f in F[s-1])(not T[f, 1, 1])
+);
 
 % forbidden 3 ???
 

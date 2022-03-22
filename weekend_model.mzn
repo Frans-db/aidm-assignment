@@ -76,11 +76,11 @@ constraint implied_constraint( forall(i in NW)
                   (i + uw > nw \/ exists(j in lw..uw)(T[i+j] = 0))) );
 
 % % (9)
-% constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
+constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 
 % % % (10)
-% constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
-%               (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1)]));
+constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
+              (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1)]));
 
 
 % (12)
