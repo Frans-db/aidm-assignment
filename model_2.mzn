@@ -9,6 +9,8 @@ int: nw = n * w;
 
 int: numShifts;
 int: m = numShifts;
+int: mn = m * n;
+
 
 array[1..m, 1..w] of int: demand;
 array[1..m, 1..w] of int: R = demand;
@@ -35,12 +37,13 @@ array[int, 1..3] of int: forbidden3;
 array[int] of int: W = 1..w;
 array[int] of int: N = 1..n;
 array[int] of int: NW = 1..nw;
+array[int] of int: MN = 1..mn;
 
 
-array[s in A_plus, 1..w] of var 1..n: T;
+array[1..(m+1), 1..n, 1..w] of var bool: T;
 
 % viewpoint 2:
-% for each task-day, which employee is assigned to it
+% on which days does each employee do each task
 
 % constraints from paper:
 % 1. demand on each day is met
@@ -48,9 +51,22 @@ array[s in A_plus, 1..w] of var 1..n: T;
 % 3. blocks meet maximum length requirement
 % 4. no forbidden sequences
 
+% same as before. employee 1 starts day 1 working, employee n sends with a free day
+% constraint symmetry_breaking_constraint(T[1] != 1);
+% constraint symmetry_breaking_constraint(T[(m+1)*(n-1) + 1] == w);
 
 
-% (1) and (2)
+
+% demand on each day is met
+constraint forall(d in W, s in A)(
+              sum(i in N)
+                (T[s+1, i, d]) = R[s, d]);
+                
+% symmetry breaking constraints, also avoids cyclicity
+% employee 1 does not start with a free day
+constraint symmetry_breaking_constraint(not T[1, 1, 1]);
+% employee n ends with a free day
+constraint symmetry_breaking_constraint(not T[1, n, w]);
 % constraint forall(d in W, s in A)
 %               (sum(i in 0..(n-1))(T[d + w*i] == s) == R[s, d+o]);
 % constraint implied_constraint( forall(d in W)
@@ -60,13 +76,10 @@ array[s in A_plus, 1..w] of var 1..n: T;
 % constraint symmetry_breaking_constraint(T[1] != 0);
 % constraint symmetry_breaking_constraint(T[nw] == 0);
 
-% custom
-% constraint symmetry_breaking_constraint(
-%   exists(s in A)(R[s, 1] > 0 /\ forall(j in 1..(ls[s]))(T[j] == s))
-% );
 
 
 % (5)
+% constraint forall(s in A_plus)(true);
 % constraint forall(s in A_plus, i in NW)
 %               ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
 %                   forall(j in 1..(ls[s+1]-1))
