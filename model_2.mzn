@@ -94,12 +94,12 @@ constraint forall(s in 2..(m+1), e in 1..n, d in 1..(w-1))(
 
 % forbidden between employees
 constraint forall(s in 2..(m+1), e in 1..(n-1))(
-  (not T[s, e, 7]) \/ forall(f in F[s-1])(not T[f, e+1, 1])
+  (not T[s, e, 7]) \/ forall(f in F[s-1])(not T[f+1, e+1, 1])
 );
 
 % forbidden between first and last employee
 constraint forall(s in 2..(m+1))(
-  (not T[s, n, 7]) \/ forall(f in F[s-1])(not T[f, 1, 1])
+  (not T[s, n, 7]) \/ forall(f in F[s-1])(not T[f+1, 1, 1])
 );
 
 % forbidden 3 ???
