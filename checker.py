@@ -1,31 +1,40 @@
 # python script to check validity of a solution
+import json
 
 # dzn
-groups = 7
+groups = 9
 numShifts = 3
-demand = [ 2, 2, 2, 2, 2, 2, 0,
-           2, 2, 2, 2, 2, 2, 0,
-           2, 2, 2, 2, 2, 0, 2 ]
+demand = [ 2, 2, 2, 2, 2, 2, 2,
+           2, 2, 2, 3, 3, 3, 2,
+           2, 2, 2, 2, 2, 2, 2 ]
+
 minShift = [2, 2, 2]
-maxShift = [6, 6, 6]
-minOff = 1
+maxShift = [7, 6, 4]
+minOff = 2
 maxOff = 4
+
 minOn = 4
 maxOn = 7
+
 forbidden = [{}, {1}, {1,2}]
-forbidden3 = [ 3, 0, 3,
-               2, 0, 1,
-               3, 0, 2,
-               3, 0, 1 ]
+forbidden3 = []
 
 # solution
-T = [2, 3, 3, 3, 3, 0, 0, 
-     1, 1, 1, 1, 1, 1, 0, 
-     1, 1, 1, 2, 2, 2, 0, 
-     0, 2, 2, 2, 2, 2, 3, 
-     3, 0, 0, 1, 1, 1, 3, 
-     3, 3, 3, 0, 0, 0, 0, 
-     2, 2, 2, 3, 3, 0, 0]
+T = [1, 1, 2, 2, 3, 3, 3, 
+     0, 0, 1, 1, 1, 2, 2, 
+     2, 0, 0, 3, 3, 3, 3, 
+     0, 0, 1, 1, 1, 1, 1, 
+     2, 2, 0, 0, 2, 2, 2, 
+     3, 3, 3, 0, 0, 1, 1, 
+     3, 3, 3, 3, 0, 0, 0, 
+     1, 1, 2, 2, 2, 0, 0, 
+     0, 2, 2, 2, 2, 0, 0]
+filename = 'T.json'
+if filename:
+    # T = [0] * 9*7
+    with open(filename, 'r') as f:
+        data = json.load(f)
+        print(len(data) / 7)
 
 # split up forbidden 3
 forbidden3 = [forbidden3[i:i+3] for i in range(0, len(forbidden3), 3)]

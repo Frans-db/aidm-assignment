@@ -26,7 +26,7 @@ int: lw = minOn;
 int: uw = maxOn;
 
 array[1..m] of int: A = 1..m;
-array[1..(m+1)] of int: A_plus = A ++ [0];
+array[1..(m+1)] of int: A_plus = [0] ++ A;
 
 array[int] of set of int: forbidden;
 array[int] of set of int: F = forbidden;
@@ -46,18 +46,12 @@ array[1..nw] of var 0..numShifts: T;
 % (1) and (2)
 constraint forall(d in W, s in A)
               (sum(i in 0..(n-1))(T[d + w*i] = s) = R[s, d+o]);
-constraint implied_constraint( forall(d in W)
-              (sum(i in 0..(n-1))(T[d + w*i] = 0) = n - sum(i in 1..m)(R[i, d+o])) );        
+constraint implied_constraint(forall(d in W)
+              (sum(i in 0..(n-1))(T[d + w*i] = 0) = n - sum(i in 1..m)(R[i, d+o])));        
 
 % (3) and (4)
 constraint symmetry_breaking_constraint(T[1] != 0);
 constraint symmetry_breaking_constraint(T[nw] = 0);
-
-% custom
-% constraint symmetry_breaking_constraint(
-%   exists(s in A)(R[s, 1] > 0 /\ forall(j in 1..(ls[s]))(T[j] = s))
-% );
-
 
 % (5)
 constraint forall(s in A_plus, i in NW)
@@ -68,7 +62,7 @@ constraint forall(s in A_plus, i in NW)
 % (6) 
 constraint forall(s in A_plus, i in NW)
               ((T[i] = s /\ (T[i-1] != s \/ i = 1)) -> 
-                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j] != s));
+                  (i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j] != s)));
 
 % (7)
 constraint implied_constraint( forall(i in NW)
@@ -79,14 +73,14 @@ constraint implied_constraint( forall(i in NW)
 % (8)
 constraint implied_constraint( forall(i in NW)
               ((T[i] != 0 /\ (T[i-1] = 0 \/ i = 1)) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[i+j] = 0)) );
+                  (i + uw > nw \/ exists(j in lw..uw)(T[i+j] = 0))) );
 
 % % (9)
-constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
+% constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 
-% % (10)
-constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
-              (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1)]));
+% % % (10)
+% constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
+%               (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1)]));
 
 
 % (12)
@@ -97,4 +91,4 @@ constraint symmetry_breaking_constraint(
 var int: freeWeekends = sum(i in 1..n)(T[(w*i - o - 1)] = 0 /\ T[(w*i - 0)] = 0);
 solve maximize freeWeekends;
 
-output ["Free Weekends = \(freeWeekends)\n", "Schedule = \(T)\n"];
+output ["Offset = \(o)\n", "Free Weekends = \(freeWeekends)\n", "Schedule = \(T)\n"];
