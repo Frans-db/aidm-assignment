@@ -36,6 +36,18 @@ array[int] of int: W = 1..w;
 array[int] of int: N = 1..n;
 array[int] of int: NW = 1..nw;
 
+% VARIABLES FOR BLOCK BOUNDING
+% r is the total demand for work shifts
+int: r = sum(i in 1..m, j in 1..w) (R[i,j]);
+% loww and upw definw lower and upper bounds for the number of work blocks
+int: loww = ceil(r / uw);
+int: upw = floor(r / lw);
+% lowo and upo define the lower and upper bounds for the number of free blocks
+int: lowo = ceil((nw - r) / maxOff);
+int: upo = floor((nw - r) / maxOn);
+% low and up define common bounds
+int: low = max(loww, lowo);
+int: up = min(upw, upo);
 
 var 0..(w-1): o;
 array[1..nw] of var 0..numShifts: T;
@@ -100,7 +112,7 @@ constraint symmetry_breaking_constraint(
 % **DETECTING INFEASIBLE ISNTANCES**
 
 % ***INFEASIBLE WEEKLY FLUCTUATION***
-% (14)
+% (13)
 constraint forall(s in A, i in W)(
   forall(j in ((us[s + 1] + 1)..(2*ls[s + 1] + 1)), k in (j - ls[s + 1])..(ls[s + 1] - 1)) 
     (R[s, i+k] >= R[s, i] + R[s, i+j-1] - R[s, i+j])
@@ -108,7 +120,7 @@ constraint forall(s in A, i in W)(
 
 % ***BOUNDING THE NUMBER OF BLOCKS***
 % (15)
-
+constraint low <= up;
 
 solve satisfy;
 
