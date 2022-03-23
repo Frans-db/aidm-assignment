@@ -75,7 +75,7 @@ var 0..(w-1): o;
 % schedule variable. T[i] = s, with s in A_plus. T[i] indicates which shift is done on day i+o
 array[1..nw] of var 0..numShifts: T;
 
-% viewpoint of this moderl:
+% viewpoint of this model:
 % for each combination of day and employee, which task is assigned to it?
 
 

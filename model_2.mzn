@@ -26,9 +26,7 @@ array[int] of int: ls = [minOff] ++ minShift;
 array[int] of int: us = [maxOff] ++ maxShift;
 int: lw = minOn;
 int: uw = maxOn;
-
 array[1..m] of int: A = 1..m;
-% array[1..(m+1)] of int: A_plus = A ++ [0];
 
 array[int] of set of int: forbidden;
 array[int] of set of int: F = forbidden;
@@ -39,21 +37,24 @@ array[int] of int: N = 1..n;
 array[int] of int: NW = 1..nw;
 array[int] of int: MN = 1..mn;
 
+% the above code is exactly equal to the code in basic_model.mzn. to avoid duplication
+% please refer to the explanations in that file
 
+
+% schedule variable
+% we decided to work from the viewpoint of the combination of a shift and an employee
+% each s in 1..(m+1), e in 1..n has a list of boolean values (d in 1..w), which indicates
+% on which day of the week the employee does a shift
+
+% note: while writing this we realised instead of an array of boolean values it would have 
+% been much more efficient to use a single integer in the range 1..w, this could be a good
+% optimisation to implement later
 array[1..(m+1), 1..n, 1..w] of var bool: T;
 
-% viewpoint 2:
-% on which days does each employee do each task
-
-% constraints from paper:
-% 1. demand on each day is met
-% 2. blocks meet minimum length requirement
-% 3. blocks meet maximum length requirement
-% 4. no forbidden sequences
-
-% same as before. employee 1 starts day 1 working, employee n sends with a free day
-% constraint symmetry_breaking_constraint(T[1] != 1);
-% constraint symmetry_breaking_constraint(T[(m+1)*(n-1) + 1] == w);
+% viewpoint of this model:
+% for each combination of shift and employee, on which day does the employee do the shift?
+% due to the change in viewpoint constraints could not be directly copied from the paper,
+% but the general idea for most constraints is still the same
 
 
 
