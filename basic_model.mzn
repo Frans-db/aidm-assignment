@@ -169,4 +169,7 @@ constraint symmetry_breaking_constraint(
 
 solve satisfy;
 
-output ["Schedule = \(T)\n"];
+
+% array[1..nw] of string: out = [if x = 0 then "-" else show(x) endif | x in T];
+output [join(", ", [if x = 0 then "-" else show(x) endif | x in fix(T)])];
+% output [if x = 0 then "-" else show(x) endif  ++ ", " | x in fix(T)];
