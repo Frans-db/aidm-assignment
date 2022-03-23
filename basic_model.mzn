@@ -1,5 +1,3 @@
-include "globals.mzn";
-
 % an implementation of the paper
 % Lucas Kletzander et al. 
 % “Exact methods for extended rotating workforce scheduling problems”. 
