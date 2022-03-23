@@ -1,5 +1,3 @@
-include "globals.mzn";
-
 int: w = 7;
 
 % Loaded data
