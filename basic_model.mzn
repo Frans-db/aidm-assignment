@@ -147,14 +147,22 @@ constraint forall(i in NW)
                   i + uw > nw \/ exists(j in lw..uw)(T[i+j] == 0));
 
 % (9)
+% ensures no forbidden sequences (of length 2) exist in the schedule
+% either the current shift is not equal to s, or the next shift is not equal to a shift
+% that is not allowed to come after s (andy s_2 in F[s])
 constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 
 % (10)
+% ensures no forbidden sequences (of length 3) exist in the schedule
+% any block of shifts of length 3 in the schedule must have at least 1 shift that does
+% not match with the sequence of forbidden shifts (this must hold true for every
+% sequence of forbidden shifts)
 constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
               (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod (nw+1)]));
 
 
 % (12)
+% what
 constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[s,d] == R[s,d+1]) -> o == 0
 );
