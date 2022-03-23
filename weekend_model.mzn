@@ -68,7 +68,7 @@ constraint forall(s in A_plus, i in NW)
 constraint ( forall(i in NW)
               ((T[i] != 0 /\ (T[i-1] = 0 \/ i = 1)) -> 
                   forall(j in 1..(lw-1))
-                      (T[i+j] != 0)) ;
+                      (T[i+j] != 0)) );
 
 % (8)
 constraint  forall(i in NW)
