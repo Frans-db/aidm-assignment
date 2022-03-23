@@ -44,9 +44,9 @@ int: maxOn;
 
 % ls and us variable to match description of ls in the paper:
 % ls[s] = the minimum number of times this shift (including the 0 shift) has to be worked in a row in a valid schedule
-array[int] of int: ls = minShift ++ [minOff];
+array[int] of int: ls = [minOff] ++ minShift;
 % us[s] = the maximum number of times this shift (including the 0 shift) has to be worked in a row in a valid schedule
-array[int] of int: us = maxShift ++ [maxOff];
+array[int] of int: us = [maxOff] ++ maxShift;
 % variable lw and uw as a substitute for minOn and maxOn to match the naming used in the paper
 int: lw = minOn;
 int: uw = maxOn;
@@ -55,7 +55,7 @@ int: uw = maxOn;
 % list of shifts, excluding the 0 shift
 array[1..m] of int: A = 1..m;
 % list of shifts, including the 0 shift
-array[1..(m+1)] of int: A_plus = A ++ [0];
+array[1..(m+1)] of int: A_plus = [0] ++ A;
 
 % forbidden[s] = set of shifts that are not allowed to come after shift s
 array[int] of set of int: forbidden;
