@@ -100,34 +100,56 @@ constraint implied_constraint( forall(d in W)
 % 
 constraint symmetry_breaking_constraint(T[1] != 0);
 % (4)
+%
 constraint symmetry_breaking_constraint(T[nw] == 0);
+  
 
 % (5)
+% ensures the miminum number of shifts s are worked in a row
+% only checks for the minimum length requirement when a new block just started
+% 0 0 1 1 1 1 1
+%     ^ starts checking here
+
+% we made a slight modification to this constraint:
+% the constraint would fail for i=1, because then T[1-11] = T[0] would give an index out of bounds error.
+% to cirumvent this we check either T[i-1] != s OR i = 1, to make sure that the first element is also checked
+% for the minimum length requirement
+% this modification is added in the next 4 constraints
 constraint forall(s in A_plus, i in NW)
               ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
                   forall(j in 1..(ls[s+1]-1))
                       (T[i+j] == s));
 
 % (6) 
+% ensures that no more than the maximum number of shifts s are worked in a row
+% only checks for the maximum length requirement when a new block just started
+% for the sequence to be shorter than the maximum length any shift in the range
+% us[s] (minimum length) and ls[s] (maximum length) has to be not equal to s
 constraint forall(s in A_plus, i in NW)
               ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
                   i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j] != s));
 
 % (7)
-constraint implied_constraint( forall(i in NW)
+% ensures the miminum number of shifts (for any s) are worked in a row
+% in this case we can check that the sequence length is long enough by ensuring 
+% there is no 0 shift in the range i, i+lw (mimimum sequence length)
+constraint forall(i in NW)
               ((T[i] != 0 /\ (T[i-1] == 0 \/ i == 1)) -> 
                   forall(j in 1..(lw-1))
-                      (T[i+j] != 0)) );
+                      (T[i+j] != 0));
 
 % (8)
-constraint implied_constraint( forall(i in NW)
+% ensures that no more than the miminum number of shifts (for any s) are worked in a row
+% this is checked by ensuring at least 1 shift in the range lw (minimum sequence length) 
+% and uw (maximum sequence length) is equal to the 0 shift
+constraint forall(i in NW)
               ((T[i] != 0 /\ (T[i-1] == 0 \/ i == 1)) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[i+j] == 0)) );
+                  i + uw > nw \/ exists(j in lw..uw)(T[i+j] == 0));
 
-% % (9)
+% (9)
 constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 
-% % (10)
+% (10)
 constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
               (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod (nw+1)]));
 
