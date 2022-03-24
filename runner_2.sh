@@ -1,11 +1,12 @@
+
 #!/bin/sh
 /home/frans/Projects/aidm-assignment
 echo 1
 minizinc --solver gecode model_2.mzn instances/Example1.dzn --time-limit 3600000 --output-time
 echo 2
 minizinc --solver gecode model_2.mzn instances/Example2.dzn --time-limit 3600000 --output-time
-#echo 3
-#minizinc --solver gecode model_2.mzn instances/Example3.dzn --time-limit 3600000 --output-time
+echo 3
+minizinc --solver gecode model_2.mzn instances/Example3.dzn --time-limit 3600000 --output-time
 echo 4
 minizinc --solver gecode model_2.mzn instances/Example4.dzn --time-limit 3600000 --output-time
 echo 5
