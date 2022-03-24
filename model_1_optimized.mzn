@@ -79,7 +79,7 @@ constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
 );
 
-solve :: int_search(T, first_fail, indomain_min) satisfy;
+solve :: int_search(T, first_fail, indomain_random) satisfy;
 
 output [show(o), "\n"];
 output [join(", ", [if x = 0 then "-" else show(x) endif | x in fix(T)])];
