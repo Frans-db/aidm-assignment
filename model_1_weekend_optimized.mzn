@@ -6,8 +6,9 @@
 % implemented by
 % Frans de Boer ()
 % Adarsh Denga ()
-% all code in this file is the same as in the file model_1.mzn thus no comments will be added here to avoid duplication
-% the final parts (maximizing the objective) is new and is commented in this file
+
+% most code in this file is the same as in the file model_1_weekend.mzn thus no comments will be added here to avoid duplication.
+% any new and/or optimized parts will be commented
 
 int: w = 7;
 int: groups;
