@@ -49,35 +49,35 @@ constraint forall(d in W, s in A)
 constraint implied_constraint( forall(d in W)
               (sum(i in 0..(n-1))(T[modulo_nw(d + w*i)] == 0) == n - sum(i in 1..m)(R[modulo_m(i), modulo_w_var(d+o)])) ) :: domain;        
 
-constraint symmetry_breaking_constraint(T[1] != 0) :: domain;
-constraint symmetry_breaking_constraint(T[nw] == 0) :: domain;
+constraint symmetry_breaking_constraint(T[1] != 0);
+constraint symmetry_breaking_constraint(T[nw] == 0);
   
 constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
                   forall(j in 1..(ls[s+1]-1))
-                      (T[modulo_nw(i+j)] == s)) :: domain;
+                      (T[modulo_nw(i+j)] == s));
 
 constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
-                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[modulo_nw(i+j)] != s)) :: domain;
+                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[modulo_nw(i+j)] != s));
 
 constraint forall(i in NW)
               ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
                   forall(j in 1..(lw-1))
-                      (T[modulo_nw(i+j)] != 0)) :: domain;
+                      (T[modulo_nw(i+j)] != 0));
 
 constraint forall(i in NW)
               ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[modulo_nw(i+j)] == 0)) :: domain;
+                  i + uw > nw \/ exists(j in lw..uw)(T[modulo_nw(i+j)] == 0));
 
 constraint forall(s in A, i in NW)(T[modulo_nw(i)] != s \/ not (T[modulo_nw(i+1)] in F[s]));
 
 constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
-              (exists(j in 1..3)(forbidden3[x, j] != T[modulo_nw(i + j - 1)])) :: domain;
+              (exists(j in 1..3)(forbidden3[x, j] != T[modulo_nw(i + j - 1)]));
 
 constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
-) :: domain;
+);
 
 solve satisfy;
 
