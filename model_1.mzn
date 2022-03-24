@@ -76,10 +76,12 @@ array[1..nw] of var 0..numShifts: T;
 % viewpoint of this model:
 % for each combination of day and employee, which task is assigned to it?
 
+% modulo functions. used to get the correct index in any of the arrays
 function 0..nw: modulo_nw(int: a) = if a <= 0 then a + nw else if a <= nw then a else 1 + (a mod (nw+1)) endif endif;
 function var 0..m: modulo_m(int: a) = if a <= 0 then (a + m) else if a <= m then a else 1 + (a mod (m+1)) endif endif;
-function var 0..w: modulo_w_var(var int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
 function var 0..w: modulo_w(int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
+function var 0..w: modulo_w_var(var int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
+
 % (1)
 % ensure that the demand on each day is met.
 % T[d + w*i] iterates over every w-th element and adds this to the total sum when the shift on this day is equal to s
@@ -97,11 +99,10 @@ constraint forall(d in W, s in A)
 constraint implied_constraint( forall(d in W)
               (sum(i in 0..(n-1))(T[modulo_nw(d + w*i)] == 0) == n - sum(i in 1..m)(R[modulo_m(i), modulo_w_var(d+o)])) );        
 
+% next 2 constraints break symmetries, and break some of the cyclicity in the schedule
 % (3)
-% 
 constraint symmetry_breaking_constraint(T[1] != 0);
 % (4)
-%
 constraint symmetry_breaking_constraint(T[nw] == 0);
   
 
@@ -162,10 +163,8 @@ constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
               (exists(j in 1..3)(forbidden3[x, j] != T[modulo_nw(i + j - 1)]));
 
 
-% (11)
-% constraint o = min([w] ++ [d | d in W where sum(i in 1..m)(R[i,d]) > sum(i in 1..m)(R[modulo_m(i),modulo_w(d-1)])]) - 1;
 % (12)
-% what
+% constraint copied from paper, binds o to 0 in some cases
 constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
 );
