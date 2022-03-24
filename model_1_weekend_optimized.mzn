@@ -41,6 +41,7 @@ array[1..nw] of var 0..numShifts: T;
 function 0..nw: modulo_nw(int: a) = if a <= 0 then a + nw else if a <= nw then a else 1 + (a mod (nw+1)) endif endif;
 function 0..m: modulo_m(int: a) = if a <= 0 then (a + m) else if a <= m then a else 1 + (a mod (m+1)) endif endif;
 function 0..w: modulo_w(int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
+function var 0..nw: modulo_nw_var(var int: a) = if a <= 0 then a + nw else if a <= nw then a else 1 + (a mod (nw+1)) endif endif;
 function var 0..w: modulo_w_var(var int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
 
 constraint forall(d in W, s in A)
@@ -55,20 +56,20 @@ constraint symmetry_breaking_constraint(T[nw] == 0);
 constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
                   forall(j in 1..(ls[s+1]-1))
-                      (T[modulo_nw(i+j)] == s));
+                      (T[modulo_nw(i+j)] == s)) :: domain;
 
 constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
-                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[modulo_nw(i+j)] != s));
+                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[modulo_nw(i+j)] != s)) :: domain;
 
 constraint forall(i in NW)
               ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
                   forall(j in 1..(lw-1))
-                      (T[modulo_nw(i+j)] != 0));
+                      (T[modulo_nw(i+j)] != 0)) :: domain;
 
 constraint forall(i in NW)
               ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[modulo_nw(i+j)] == 0));
+                  i + uw > nw \/ exists(j in lw..uw)(T[modulo_nw(i+j)] == 0)) :: domain;
 
 constraint forall(s in A, i in NW)(T[modulo_nw(i)] != s \/ not (T[modulo_nw(i+1)] in F[s]));
 
