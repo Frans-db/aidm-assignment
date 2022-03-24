@@ -163,12 +163,12 @@ constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
 
 
 % (11)
-constraint o = min([w] ++ [d | d in W where sum(i in 1..m)(R[i,d]) > sum(i in 1..m)(R[modulo_m(i),modulo_w(d-1)])]) - 1;
+% constraint o = min([w] ++ [d | d in W where sum(i in 1..m)(R[i,d]) > sum(i in 1..m)(R[modulo_m(i),modulo_w(d-1)])]) - 1;
 % (12)
 % what
-% constraint symmetry_breaking_constraint(
-%   forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
-% );
+constraint symmetry_breaking_constraint(
+  forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
+);
 
 solve satisfy;
 
