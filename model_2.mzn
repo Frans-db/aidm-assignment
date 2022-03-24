@@ -44,9 +44,6 @@ array[int] of int: MN = 1..mn;
 % each s in 1..(m+1), e in 1..n has a list of boolean values (d in 1..w), which indicates
 % on which day of the week the employee does a shift
 
-% note: while writing this we realised instead of an array of boolean values it would have 
-% been much more efficient to use a single integer in the range 1..w, this could be a good
-% optimisation to implement later
 array[1..(m+1), 1..n, 1..w] of var bool: T;
 
 % viewpoint of this model:
@@ -69,9 +66,9 @@ constraint forall(d in 1..w, e in 1..n)
                     
 % next 2 constraints break symmetries, and break some of the cyclicity in the schedule
 % same functionality as constraint 3 in the paper
-constraint not T[1, 1, 1];
+constraint symmetry_breaking_constraint( not T[1, 1, 1] );
 % same functionality as constraint 4 in the paper
-constraint T[1, n, w];
+constraint symmetry_breaking_constraint( T[1, n, w] );
 
 % the following 4 constraints make use of the following:
 % the schedule is cyclic, so when the week ends from employee e, they start the next

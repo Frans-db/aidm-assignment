@@ -173,6 +173,5 @@ solve satisfy;
 
 
 % array[1..nw] of string: out = [if x = 0 then "-" else show(x) endif | x in T];
-output [show(o), "\n"];
 output [join(", ", [if x = 0 then "-" else show(x) endif | x in fix(T)])];
 % output [if x = 0 then "-" else show(x) endif  ++ ", " | x in fix(T)];

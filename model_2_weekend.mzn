@@ -44,9 +44,6 @@ array[int] of int: MN = 1..mn;
 % each s in 1..(m+1), e in 1..n has a list of boolean values (d in 1..w), which indicates
 % on which day of the week the employee does a shift
 
-% note: while writing this we realised instead of an array of boolean values it would have 
-% been much more efficient to use a single integer in the range 1..w, this could be a good
-% optimisation to implement later
 array[1..(m+1), 1..n, 1..w] of var bool: T;
 
 % viewpoint of this model:
