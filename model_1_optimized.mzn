@@ -59,21 +59,21 @@ constraint forall(s in 0..m, i in NW)
 
 constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
-                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[modulo_nw(i+j)] != s));
+                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[modulo_nw(i+j)] != s)) :: domain;
 
 constraint forall(i in NW)
               ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
                   forall(j in 1..(lw-1))
-                      (T[modulo_nw(i+j)] != 0));
+                      (T[modulo_nw(i+j)] != 0)) :: domain;
 
 constraint forall(i in NW)
               ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[modulo_nw(i+j)] == 0));
+                  i + uw > nw \/ exists(j in lw..uw)(T[modulo_nw(i+j)] == 0)) :: domain;
 
 constraint forall(s in A, i in NW)(T[modulo_nw(i)] != s \/ not (T[modulo_nw(i+1)] in F[s]));
 
 constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
-              (exists(j in 1..3)(forbidden3[x, j] != T[modulo_nw(i + j - 1)]));
+              (exists(j in 1..3)(forbidden3[x, j] != T[modulo_nw(i + j - 1)])) :: domain;
 
 constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
