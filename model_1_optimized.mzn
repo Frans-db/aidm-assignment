@@ -44,18 +44,18 @@ function 0..w: modulo_w(int: a) = if a <= 0 then (a + w) else if a <= w then a e
 function var 0..w: modulo_w_var(var int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
 
 constraint forall(d in W, s in A)
-              (sum(i in 0..(n-1))(T[modulo_nw(d + w*i)] == s) == R[modulo_m(s), modulo_w_var(d+o)]);
+              (sum(i in 0..(n-1))(T[modulo_nw(d + w*i)] == s) == R[modulo_m(s), modulo_w_var(d+o)]) :: domain;
               
 constraint implied_constraint( forall(d in W)
-              (sum(i in 0..(n-1))(T[modulo_nw(d + w*i)] == 0) == n - sum(i in 1..m)(R[modulo_m(i), modulo_w_var(d+o)])) );        
+              (sum(i in 0..(n-1))(T[modulo_nw(d + w*i)] == 0) == n - sum(i in 1..m)(R[modulo_m(i), modulo_w_var(d+o)])) ) :: domain;        
 
-constraint symmetry_breaking_constraint(T[1] != 0);
-constraint symmetry_breaking_constraint(T[nw] == 0);
+constraint symmetry_breaking_constraint(T[1] != 0) :: domain;
+constraint symmetry_breaking_constraint(T[nw] == 0) :: domain;
   
 constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
                   forall(j in 1..(ls[s+1]-1))
-                      (T[modulo_nw(i+j)] == s));
+                      (T[modulo_nw(i+j)] == s)) :: domain;
 
 constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
@@ -77,7 +77,7 @@ constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
 
 constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
-);
+) :: domain;
 
 solve satisfy;
 
