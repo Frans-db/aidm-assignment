@@ -76,14 +76,17 @@ array[1..nw] of var 0..numShifts: T;
 % viewpoint of this model:
 % for each combination of day and employee, which task is assigned to it?
 
-
+function 0..nw: modulo_nw(int: a) = if a <= 0 then a + nw else if a <= nw then a else 1 + (a mod (nw+1)) endif endif;
+function var 0..m: modulo_m(int: a) = if a <= 0 then (a + m) else if a <= m then a else 1 + (a mod (m+1)) endif endif;
+function var 0..w: modulo_w_var(var int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
+function var 0..w: modulo_w(int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
 % (1)
 % ensure that the demand on each day is met.
 % T[d + w*i] iterates over every w-th element and adds this to the total sum when the shift on this day is equal to s
 % the total number of shifts s, done on day d (in any period w) has to then equal the demand of shift s on day d+o, 
 % where the o allows our shifts to be offset by the value o
 constraint forall(d in W, s in A)
-              (sum(i in 0..(n-1))(T[d + w*i] == s) == R[s, d+o]);
+              (sum(i in 0..(n-1))(T[modulo_nw(d + w*i)] == s) == R[modulo_m(s), modulo_w_var(d+o)]);
               
 % (2)
 % a second way to ensure the demand on each day is met.
@@ -92,7 +95,7 @@ constraint forall(d in W, s in A)
 % this constraint counts the number of employees with day off (once again using T[d + w*i] to count day d in any time period)
 % and then restricts this to be equal to the number of employees - the total demand
 constraint implied_constraint( forall(d in W)
-              (sum(i in 0..(n-1))(T[d + w*i] == 0) == n - sum(i in 1..m)(R[i, d+o])) );        
+              (sum(i in 0..(n-1))(T[modulo_nw(d + w*i)] == 0) == n - sum(i in 1..m)(R[modulo_m(i), modulo_w_var(d+o)])) );        
 
 % (3)
 % 
@@ -114,9 +117,9 @@ constraint symmetry_breaking_constraint(T[nw] == 0);
 % for the minimum length requirement
 % this modification is added in the next 4 constraints
 constraint forall(s in 0..m, i in NW)
-              ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
+              ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
                   forall(j in 1..(ls[s+1]-1))
-                      (T[i+j] == s));
+                      (T[modulo_nw(i+j)] == s));
 
 % (6) 
 % ensures that no more than the maximum number of shifts s are worked in a row
@@ -124,31 +127,31 @@ constraint forall(s in 0..m, i in NW)
 % for the sequence to be shorter than the maximum length any shift in the range
 % us[s] (minimum length) and ls[s] (maximum length) has to be not equal to s
 constraint forall(s in 0..m, i in NW)
-              ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
-                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j] != s));
+              ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
+                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[modulo_nw(i+j)] != s));
 
 % (7)
 % ensures the miminum number of shifts (for any s) are worked in a row
 % in this case we can check that the sequence length is long enough by ensuring 
 % there is no 0 shift in the range i, i+lw (mimimum sequence length)
 constraint forall(i in NW)
-              ((T[i] != 0 /\ (T[i-1] == 0 \/ i == 1)) -> 
+              ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
                   forall(j in 1..(lw-1))
-                      (T[i+j] != 0));
+                      (T[modulo_nw(i+j)] != 0));
 
 % (8)
 % ensures that no more than the miminum number of shifts (for any s) are worked in a row
 % this is checked by ensuring at least 1 shift in the range lw (minimum sequence length) 
 % and uw (maximum sequence length) is equal to the 0 shift
 constraint forall(i in NW)
-              ((T[i] != 0 /\ (T[i-1] == 0 \/ i == 1)) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[i+j] == 0));
+              ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
+                  i + uw > nw \/ exists(j in lw..uw)(T[modulo_nw(i+j)] == 0));
 
 % (9)
 % ensures no forbidden sequences (of length 2) exist in the schedule
 % either the current shift is not equal to s, or the next shift is not equal to a shift
 % that is not allowed to come after s (andy s_2 in F[s])
-constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
+constraint forall(s in A, i in NW)(T[modulo_nw(i)] != s \/ not (T[modulo_nw(i+1)] in F[s]));
 
 % (10)
 % ensures no forbidden sequences (of length 3) exist in the schedule
@@ -156,14 +159,16 @@ constraint forall(s in A, i in NW)(T[i] != s \/ not (T[i+1] in F[s]));
 % not match with the sequence of forbidden shifts (this must hold true for every
 % sequence of forbidden shifts)
 constraint forall(x in 1..round((length(forbidden3) / 3)), i in NW)
-              (exists(j in 1..3)(forbidden3[x, j] != T[(i + j - 1) mod (nw+1)]));
+              (exists(j in 1..3)(forbidden3[x, j] != T[modulo_nw(i + j - 1)]));
 
 
+% (11)
+constraint o = min([w] ++ [d | d in W where sum(i in 1..m)(R[i,d]) > sum(i in 1..m)(R[modulo_m(i),modulo_w(d-1)])]) - 1;
 % (12)
 % what
-constraint symmetry_breaking_constraint(
-  forall(s in A, d in W)(R[s,d] == R[s,d+1]) -> o == 0
-);
+% constraint symmetry_breaking_constraint(
+%   forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
+% );
 
 solve satisfy;
 
