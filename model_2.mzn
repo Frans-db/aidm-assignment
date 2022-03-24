@@ -153,7 +153,7 @@ constraint forall(x in 1..round((length(forbidden3) / 3)))
            (((not T[forbidden3[x, 1]+1, n, 6]) \/ (not T[forbidden3[x, 2]+1, n, 7]) \/ (not T[forbidden3[x, 3]+1, 1, 1])) /\
            ((not T[forbidden3[x, 1]+1, n, 7]) \/ (not T[forbidden3[x, 2]+1, 1, 1]) \/ (not T[forbidden3[x, 3]+1, 1, 2])));             
 
-var int: freeWeekends = sum(e in 1..n)(T[1, e, 6] /\ T[1, e, 7]);
-solve maximize freeWeekends;
+% var int: freeWeekends = sum(e in 1..n)(T[1, e, 6] /\ T[1, e, 7]);
+solve satisfy;
 
-output ["Schedule = \(T)\n", "Free Weekends = \(freeWeekends)\n"];
+output ["Schedule = \(T)\n"];

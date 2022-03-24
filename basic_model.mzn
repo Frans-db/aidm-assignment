@@ -53,7 +53,7 @@ int: uw = maxOn;
 % list of shifts, excluding the 0 shift
 array[1..m] of int: A = 1..m;
 % list of shifts, including the 0 shift
-array[1..(m+1)] of int: A_plus = [0] ++ A;
+% array[1..(m+1)] of int: A_plus = [0] ++ A;
 
 % forbidden[s] = set of shifts that are not allowed to come after shift s
 array[int] of set of int: forbidden;
@@ -113,7 +113,7 @@ constraint symmetry_breaking_constraint(T[nw] == 0);
 % to cirumvent this we check either T[i-1] != s OR i = 1, to make sure that the first element is also checked
 % for the minimum length requirement
 % this modification is added in the next 4 constraints
-constraint forall(s in A_plus, i in NW)
+constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
                   forall(j in 1..(ls[s+1]-1))
                       (T[i+j] == s));
@@ -123,7 +123,7 @@ constraint forall(s in A_plus, i in NW)
 % only checks for the maximum length requirement when a new block just started
 % for the sequence to be shorter than the maximum length any shift in the range
 % us[s] (minimum length) and ls[s] (maximum length) has to be not equal to s
-constraint forall(s in A_plus, i in NW)
+constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (T[i-1] != s \/ i == 1)) -> 
                   i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[i+j] != s));
 
@@ -169,5 +169,6 @@ solve satisfy;
 
 
 % array[1..nw] of string: out = [if x = 0 then "-" else show(x) endif | x in T];
+output [show(o), "\n"];
 output [join(", ", [if x = 0 then "-" else show(x) endif | x in fix(T)])];
 % output [if x = 0 then "-" else show(x) endif  ++ ", " | x in fix(T)];
