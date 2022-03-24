@@ -5,16 +5,16 @@ echo 1
 minizinc --solver gecode model_2.mzn instances/Example1.dzn --time-limit 3600000 --output-time
 echo 2
 minizinc --solver gecode model_2.mzn instances/Example2.dzn --time-limit 3600000 --output-time
-#echo 3
-#minizinc --solver gecode model_2.mzn instances/Example3.dzn --time-limit 3600000 --output-time
+echo 3
+minizinc --solver gecode model_2.mzn instances/Example3.dzn --time-limit 3600000 --output-time
 echo 4
 minizinc --solver gecode model_2.mzn instances/Example4.dzn --time-limit 3600000 --output-time
 echo 5
 minizinc --solver gecode model_2.mzn instances/Example5.dzn --time-limit 3600000 --output-time
 echo 6
 minizinc --solver gecode model_2.mzn instances/Example6.dzn --time-limit 3600000 --output-time
-#echo 7
-#minizinc --solver gecode model_2.mzn instances/Example7.dzn --time-limit 3600000 --output-time
+echo 7
+minizinc --solver gecode model_2.mzn instances/Example7.dzn --time-limit 3600000 --output-time
 echo 8
 minizinc --solver gecode model_2.mzn instances/Example8.dzn --time-limit 3600000 --output-time
 echo 9
