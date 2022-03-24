@@ -6,11 +6,11 @@
 % implemented by
 % Frans de Boer ()
 % Adarsh Denga ()
-
-% most code in this file is the same as in the file model_1_weekend.mzn thus no comments will be added here to avoid duplication.
-% any new and/or optimized parts will be commented
+% all code in this file is the same as in the file model_1.mzn thus no comments will be added here to avoid duplication
+% any new/optimized parts will be commented
 
 int: w = 7;
+
 int: groups;
 int: numShifts;
 int: n = groups;
@@ -41,7 +41,6 @@ array[1..nw] of var 0..numShifts: T;
 function 0..nw: modulo_nw(int: a) = if a <= 0 then a + nw else if a <= nw then a else 1 + (a mod (nw+1)) endif endif;
 function 0..m: modulo_m(int: a) = if a <= 0 then (a + m) else if a <= m then a else 1 + (a mod (m+1)) endif endif;
 function 0..w: modulo_w(int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
-function var 0..nw: modulo_nw_var(var int: a) = if a <= 0 then a + nw else if a <= nw then a else 1 + (a mod (nw+1)) endif endif;
 function var 0..w: modulo_w_var(var int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
 
 constraint forall(d in W, s in A)
@@ -56,20 +55,20 @@ constraint symmetry_breaking_constraint(T[nw] == 0);
 constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
                   forall(j in 1..(ls[s+1]-1))
-                      (T[modulo_nw(i+j)] == s)) :: domain;
+                      (T[modulo_nw(i+j)] == s));
 
 constraint forall(s in 0..m, i in NW)
               ((T[i] == s /\ (i = 1 \/ T[i-1] != s)) -> 
-                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[modulo_nw(i+j)] != s)) :: domain;
+                  i + us[s+1] > nw \/ exists(j in ls[s+1]..us[s+1])(T[modulo_nw(i+j)] != s));
 
 constraint forall(i in NW)
               ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
                   forall(j in 1..(lw-1))
-                      (T[modulo_nw(i+j)] != 0)) :: domain;
+                      (T[modulo_nw(i+j)] != 0));
 
 constraint forall(i in NW)
               ((T[i] != 0 /\ (i = 1 \/ T[i-1] = 0)) -> 
-                  i + uw > nw \/ exists(j in lw..uw)(T[modulo_nw(i+j)] == 0)) :: domain;
+                  i + uw > nw \/ exists(j in lw..uw)(T[modulo_nw(i+j)] == 0));
 
 constraint forall(s in A, i in NW)(T[modulo_nw(i)] != s \/ not (T[modulo_nw(i+1)] in F[s]));
 
@@ -80,15 +79,7 @@ constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
 );
 
-% calculation to determine free weekends
-% the number of times the last 2 days of the schedule have the 0 shift for any employee
-var int: freeWeekends = sum(i in 1..n)(T[modulo_nw_var(w*i - o - 1)] = 0 /\ T[modulo_nw_var(w*i - o)] = 0);
+solve satisfy;
 
-solve maximize freeWeekends;
-
-
-% array[1..nw] of string: out = [if x = 0 then "-" else show(x) endif | x in T];
 output [show(o), "\n"];
-output [join(", ", [if x = 0 then "-" else show(x) endif | x in fix(T)]), "\n"];
-output [show(freeWeekends)];
-% output [if x = 0 then "-" else show(x) endif  ++ ", " | x in fix(T)];
+output [join(", ", [if x = 0 then "-" else show(x) endif | x in fix(T)])];
