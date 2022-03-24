@@ -170,6 +170,10 @@ constraint forall(x in 1..round((length(forbidden3) / 3)))
            (((not T[forbidden3[x, 1]+1, n, 6]) \/ (not T[forbidden3[x, 2]+1, n, 7]) \/ (not T[forbidden3[x, 3]+1, 1, 1])) /\
            ((not T[forbidden3[x, 1]+1, n, 7]) \/ (not T[forbidden3[x, 2]+1, 1, 1]) \/ (not T[forbidden3[x, 3]+1, 1, 2])));             
 
-solve satisfy;
+% calculate the number of free weekends as the number of times
+% shift 0 is true for an employee on both day 6 and 7
+var int: freeWeekends = sum(e in 1..n)(T[1, e, 6] /\ T[1, e, 7]);
+solve maximize freeWeekends;
 
 output ["Schedule = \(T)\n"];
+output [show(freeWeekends)];

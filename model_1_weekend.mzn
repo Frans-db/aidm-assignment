@@ -77,9 +77,10 @@ array[1..nw] of var 0..numShifts: T;
 % for each combination of day and employee, which task is assigned to it?
 
 % modulo functions. used to get the correct index in any of the arrays
-function 0..nw: modulo_nw(int: a) = if a <= 0 then a + nw else if a <= nw then a else 1 + (a mod (nw+1)) endif endif;
+function 0..nw: modulo_nw        (int: a) = if a <= 0 then a + nw else if a <= nw then a else 1 + (a mod (nw+1)) endif endif;
+function var 0..nw: modulo_nw_var(var int: a) = if a <= 0 then a + nw else if a <= nw then a else 1 + (a mod (nw+1)) endif endif;
 function 0..m: modulo_m(int: a) = if a <= 0 then (a + m) else if a <= m then a else 1 + (a mod (m+1)) endif endif;
-function 0..w: modulo_w(int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
+function 0..w: modulo_w        (int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
 function var 0..w: modulo_w_var(var int: a) = if a <= 0 then (a + w) else if a <= w then a else 1 + (a mod (w+1)) endif endif;
 
 % (1)
@@ -169,10 +170,14 @@ constraint symmetry_breaking_constraint(
   forall(s in A, d in W)(R[modulo_m(s),modulo_w(d)] == R[modulo_m(s),modulo_w(d+1)]) -> o == 0
 );
 
-solve satisfy;
+% calculation to determine free weekends
+var int: freeWeekends = sum(i in 1..n)(T[modulo_nw_var(w*i - o - 1)] = 0 /\ T[modulo_nw_var(w*i - o)] = 0);
+
+solve maximize freeWeekends;
 
 
 % array[1..nw] of string: out = [if x = 0 then "-" else show(x) endif | x in T];
 output [show(o), "\n"];
-output [join(", ", [if x = 0 then "-" else show(x) endif | x in fix(T)])];
+output [join(", ", [if x = 0 then "-" else show(x) endif | x in fix(T)]), "\n"];
+output [show(freeWeekends)];
 % output [if x = 0 then "-" else show(x) endif  ++ ", " | x in fix(T)];
