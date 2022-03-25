@@ -87,5 +87,5 @@ solve maximize freeWeekends;
 
 
 % output the schedule offset by o
-output [join(", ", fix([if T[modulo_nw_var(i + o)] = 0 then "-" else show(T[modulo_nw_var(i + o)]) endif | i in 1..nw]))];
+output ["[" ++ join(", ", fix([if T[modulo_nw_var(i + o)] = 0 then "-" else show(T[modulo_nw_var(i + o)]) endif | i in 1..nw])) ++ "]"];
 output ["\n", show(freeWeekends)];

@@ -97,5 +97,5 @@ constraint forall(s in 1..m+1, e in 1..n, d in 1..w)(T[s, e, d] -> formatted[(e-
 var int: freeWeekends = sum(e in 1..n)(T[1, e, 6] /\ T[1, e, 7]);
 solve maximize freeWeekends;
 
-output [join(", ", fix([if formatted[i] = 0 then "-" else show(formatted[i]) endif | i in 1..nw]))];
+output ["[" ++ join(", ", fix([if formatted[i] = 0 then "-" else show(formatted[i]) endif | i in 1..nw])) ++ "]"];
 output ["\n", show(freeWeekends)];
