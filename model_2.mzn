@@ -167,13 +167,11 @@ constraint forall(x in 1..round((length(forbidden3) / 3)))
            (((not T[forbidden3[x, 1]+1, n, 6]) \/ (not T[forbidden3[x, 2]+1, n, 7]) \/ (not T[forbidden3[x, 3]+1, 1, 1])) /\
            ((not T[forbidden3[x, 1]+1, n, 7]) \/ (not T[forbidden3[x, 2]+1, 1, 1]) \/ (not T[forbidden3[x, 3]+1, 1, 2])));             
 
+% formatted is the expected format of the outpout
 array[1..n*w] of var 0..m: formatted;
-constraint forall(s in 1..m+1, e in 1..n, d in 1..w)(T[s, e, d] -> formatted[e*n + (d-1)] = s-1);
+% each employee shifts the index in the expected format by w. the day is then added to get to the correct index
+constraint forall(s in 1..m+1, e in 1..n, d in 1..w)(T[s, e, d] -> formatted[(e-1)*w + d] = s-1);
 
 solve satisfy;
 
-% how turn schedule into expected format
-
-
-output ["Schedule = \(T)\n"];
-output ["Schedule = \(formatted)\n"];
+output [join(", ", fix([if formatted[i] = 0 then "-" else show(formatted[i]) endif | i in 1..nw]))];

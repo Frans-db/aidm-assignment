@@ -88,11 +88,15 @@ constraint forall(x in 1..round((length(forbidden3) / 3)))
            (((not T[forbidden3[x, 1]+1, n, 6]) \/ (not T[forbidden3[x, 2]+1, n, 7]) \/ (not T[forbidden3[x, 3]+1, 1, 1])) /\
            ((not T[forbidden3[x, 1]+1, n, 7]) \/ (not T[forbidden3[x, 2]+1, 1, 1]) \/ (not T[forbidden3[x, 3]+1, 1, 2])));         
 
+% formatted is the expected format of the outpout
+array[1..n*w] of var 0..m: formatted;
+% each employee shifts the index in the expected format by w. the day is then added to get to the correct index
+constraint forall(s in 1..m+1, e in 1..n, d in 1..w)(T[s, e, d] -> formatted[(e-1)*w + d] = s-1);
 
 % calculate the number of free weekends as the number of times
 % shift 0 is true for an employee on both day 6 and 7
 var int: freeWeekends = sum(e in 1..n)(T[1, e, 6] /\ T[1, e, 7]);
 solve maximize freeWeekends;
 
-output ["Schedule = \(T)\n"];
-output [show(freeWeekends)];
+output [join(", ", fix([if formatted[i] = 0 then "-" else show(formatted[i]) endif | i in 1..nw]))];
+output ["\n", show(freeWeekends)];
