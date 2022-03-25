@@ -20,7 +20,8 @@ results_1 = [
     [(6, 3600)],
     [(10, 3600)],
     [], # 18 time out
-
+    [], # 19 time out
+    [], # 20 time out
 ]
 
 # model 2
