@@ -86,8 +86,6 @@ var int: freeWeekends = sum(i in 1..n)(T[modulo_nw_var(w*i - o - 1)] = 0 /\ T[mo
 solve maximize freeWeekends;
 
 
-% array[1..nw] of string: out = [if x = 0 then "-" else show(x) endif | x in T];
-output [show(o), "\n"];
-output [join(", ", [if x = 0 then "-" else show(x) endif | x in fix(T)]), "\n"];
-output [show(freeWeekends)];
-% output [if x = 0 then "-" else show(x) endif  ++ ", " | x in fix(T)];
+% output the schedule offset by o
+output [join(", ", fix([if T[modulo_nw_var(i + o)] = 0 then "-" else show(T[modulo_nw_var(i + o)]) endif | i in 1..nw]))];
+output ["\n", show(freeWeekends)];

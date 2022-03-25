@@ -16,10 +16,10 @@ results_1 = [
     [(8, 3600)],
     [(6, 3600)],
     [(4, 3600)],
-    [()], # 15 time out
+    [], # 15 time out
     [(6, 3600)],
     [(10, 3600)],
-    [()], # 18 time out
+    [], # 18 time out
 
 ]
 
@@ -53,7 +53,6 @@ def plot_results(results, model_number):
             continue
         xs = [e[1] for e in instance]
         ys = [e[0] for e in instance]
-        print(xs, ys)
         plt.scatter(xs, ys)
         plt.plot(xs, ys)
 
@@ -63,4 +62,5 @@ def plot_results(results, model_number):
     plt.xscale('log')
     plt.show()
 
+plot_results(results_1, 1)
 plot_results(results_2, 2)
