@@ -1,7 +1,6 @@
 % Frans de Boer ()
 % Adarsh Denga ()
-% all code in this file is the same as in the file model_2.mzn thus no comments will be added here to avoid duplication
-% the final parts (maximizing the objective) is new and is commented in this file
+% this file is the exact same as model_2_weekend.mzn. It was added to follow the nam required by the assignment
 int: w = 7;
 int: groups;
 int: n = groups;
